@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liang.mapper.TypeMapper">
+
+    <select id="getTypeList" resultType="type">
+        select * from b_type where status!=1
+        <if test="key!=null">
+            and type_name like "%"#{key}"%"
+        </if>
+    </select>
+
+    <insert id="insertType">
+        insert into b_essay_type values (#{eid},#{tid})
+    </insert>
+
+    <delete id="delType">
+        delete from b_essay_type where essay_id = #{eid}
+    </delete>
+
+</mapper>

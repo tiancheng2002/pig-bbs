@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liang.mapper.EssayMapper">
+
+    <select id="getEssay" resultMap="essay">
+        select * from b_essay where is_draft = 0 and is_abroad = 0 and status = 1
+        <if test="key!=null and key!=''">
+            and title like "%"#{key}"%" or context like "%"#{key}"%"
+        </if>
+        order by create_time desc
+    </select>
+
+    <select id="getAbroad" resultMap="essay">
+        select * from b_essay where is_draft = 0 and is_abroad = 1 and status = 1 order by create_time desc
+    </select>
+
+    <select id="getEssayById" resultMap="essay">
+        select * from b_essay where is_draft = 0 and eid = #{eid}
+    </select>
+
+    <select id="getByUser" resultMap="essay">
+        select * from b_essay where is_draft = 0 and uid = #{uid} order by create_time desc
+    </select>
+
+    <select id="getUserInfo" resultType="user">
+        select uid,username,avatar,signature from b_user where uid = #{uid}
+    </select>
+
+    <select id="getType" resultType="type">
+        select a.tid tid,a.type_name typeName from b_type a,b_essay_type b where a.tid = b.type_id and b.essay_id = #{eid}
+    </select>
+
+    <resultMap id="essay" type="com.liang.vo.essay.EssayVo">
+        <result column="uid" property="uid" />
+        <result column="eid" property="eid" />
+        <association property="user" column="uid" select="getUserInfo" />
+        <collection property="types" column="eid" select="getType" />
+    </resultMap>
+
+    <insert id="insertRejectInfo">
+        insert into b_essay_reject (eid,reject_info) values (#{eid},#{info})
+    </insert>
+
+    <select id="getEssayWithAdmin" resultMap="essay">
+        select * from b_essay where is_draft = 0
+        <if test="status!=null">
+            and status = #{status}
+        </if>
+        <if test="key!=null and key!=''">
+            and title like "%"#{key}"%" or context like "%"#{key}"%"
+        </if>
+        order by create_time desc
+    </select>
+
+    <select id="getReject" resultType="com.liang.vo.essay.EssayRejectVo">
+        select eid,reject_info rejectInfo from b_essay_reject where eid = #{eid}
+    </select>
+
+    <delete id="delRejectInfo">
+        delete from b_essay_reject where eid = #{eid}
+    </delete>
+
+</mapper>

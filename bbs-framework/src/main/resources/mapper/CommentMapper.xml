@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liang.mapper.CommentMapper">
+
+    <select id="getComment" resultMap="comment">
+        select b.username username,b.avatar avatar,a.* from b_comment a,b_user b
+            where a.uid = b.uid and parent_id = 0 and eid = #{eid}
+                order by create_time desc
+    </select>
+
+    <select id="getCommentWithAdmin" resultType="com.liang.vo.comment.CommentVo">
+        select b.username username,b.avatar avatar,a.* from b_comment a,b_user b
+            where a.uid = b.uid
+            <if test="key!=null">
+                and a.content like "%"#{key}"%"
+            </if>
+                order by create_time desc
+    </select>
+
+    <select id="getReply" resultType="com.liang.vo.comment.CommentVo">
+        select b.username username,b.avatar avatar,a.* from b_comment a,b_user b
+            where a.uid = b.uid and parent_id = #{id}
+    </select>
+
+    <select id="getTotal" resultType="java.lang.Integer">
+        select count(*) total from b_comment where parent_id = #{id}
+    </select>
+
+    <resultMap id="comment" type="com.liang.vo.comment.CommentVo">
+        <result column="username" property="username" />
+        <result column="avatar" property="avatar" />
+        <result column="id" property="id" />
+        <result column="parent_id" property="parentId" />
+        <result column="uid" property="uid" />
+        <result column="level" property="level" />
+        <result column="address" property="address" />
+        <result column="content" property="content" />
+        <result column="create_time" property="createTime" />
+        <result column="like" property="like" />
+        <result column="eid" property="eid" />
+        <association property="reply" resultMap="commentReply" column="id" />
+    </resultMap>
+
+    <resultMap id="commentReply" type="com.liang.vo.comment.Reply">
+        <result column="id" property="id" />
+        <association property="total" javaType="Integer" column="id" select="getTotal" />
+        <collection property="list" javaType="ArrayList" column="id" select="getReply" />
+    </resultMap>
+
+</mapper>

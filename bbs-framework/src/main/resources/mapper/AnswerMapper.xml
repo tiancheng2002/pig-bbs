@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liang.mapper.AnswerMapper">
+
+    <select id="getAnswer" resultMap="answer">
+        select * from b_answer where uid = #{uid} order by create_time desc
+    </select>
+
+    <select id="getQuestion" resultType="question">
+        select qid,question_title,question_text from b_question where qid = #{qid}
+    </select>
+
+    <resultMap id="answer" type="com.liang.vo.answer.AnswerVo">
+        <result column="qid" property="qid" />
+        <association property="question" column="qid" select="getQuestion" />
+    </resultMap>
+
+</mapper>
